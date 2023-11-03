@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosRequestHeaders} from "axios";
 
 const instance = axios.create({
     baseURL: 'https://api.twitch.tv/helix',
@@ -9,7 +9,7 @@ instance.interceptors.request.use((config) => {
     const clientId = localStorage.getItem('twitch_client_id')
 
     if (token && clientId) {
-        config.headers = config.headers || {}
+        config.headers = config.headers || {} as AxiosRequestHeaders
         config.headers.Authorization = `Bearer ${token}`
         config.headers['Client-Id'] = clientId
     }

@@ -2,12 +2,19 @@ import {createRouter, createWebHistory} from "vue-router";
 import Home from "@/pages/home/Home.vue";
 import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
 import useTwitchStore from "@/store/useTwitchStore.ts";
+import TwitchAuth from "@/pages/TwitchAuth/TwitchAuth.vue";
 
 const routes = [
     {
         path: '/',
+        name: 'home',
         component: Home
     },
+    {
+        path: '/twitch_auth',
+        name: 'twitch_auth',
+        component: TwitchAuth
+    }
 ]
 
 const router = createRouter({
@@ -26,8 +33,8 @@ router.beforeEach(async (_, __, next) => {
         if (!twitchJsStore.broadcaster_info) {
             const res = await twitchStore.fetchUsers({login: twitchJsStore.username})
             twitchJsStore.setCurrentBroadcasterInfo(res)
-            next()
         }
+        next()
     } else {
         next()
     }
