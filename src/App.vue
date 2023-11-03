@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="flex w-100 justify-center">hi</div>
+  <RouterView />
 </template>
 
 <style scoped>
