@@ -10,7 +10,7 @@ const navLinks = [
   },
   {
     title: 'Виджет подписчиков',
-    name: 'home'
+    name: 'subscribers-widget'
   },
   {
     title: 'Бот',
@@ -36,8 +36,11 @@ const authLinks = computed(() => [
   <nav class="bg-violet-500 text-white">
     <div class="flex justify-end items-center gap-10 py-3 px-8">
       <ul class="flex gap-5">
-        <RouterLink class="hover:bg-violet-800 duration-150 p-1 rounded" v-for="link of navLinks" :key="link.name"
-                    :to="{name: link.name}">
+        <RouterLink
+            class="hover:bg-violet-800 duration-150 p-1 rounded"
+            v-for="link of navLinks"
+            :key="link.name"
+            :to="{name: link.name}">
           {{ link.title }}
         </RouterLink>
       </ul>

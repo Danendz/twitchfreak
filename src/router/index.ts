@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Home from "@/pages/home/Home.vue";
-import TwitchAuth from "@/pages/TwitchAuth/TwitchAuth.vue";
 
 const routes = [
     {
@@ -11,7 +10,12 @@ const routes = [
     {
         path: '/twitch_auth',
         name: 'twitch_auth',
-        component: TwitchAuth
+        component: () => import('@/pages/TwitchAuth/TwitchAuth.vue')
+    },
+    {
+        path: '/subscribers-widget',
+        name: 'subscribers-widget',
+        component: () => import('@/pages/Widgets/SubscribersWidget/SubscribersWidget.vue')
     }
 ]
 

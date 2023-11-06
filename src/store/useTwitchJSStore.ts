@@ -8,6 +8,7 @@ interface ITwitchJSStore {
     tokenExpiresAt: string | null,
     username: string,
     broadcaster_info: null | IBroadcaster
+    isBroadcastInfoLoaded: boolean,
     redirect_uri: string,
     scope: string,
     clientId: string | null,
@@ -22,6 +23,7 @@ const store = defineStore('twitchJsStore', {
         redirect_uri: 'http://localhost:5174/twitch_auth',
         scope: 'chat:edit chat:read channel:read:subscriptions',
         broadcaster_info: null,
+        isBroadcastInfoLoaded: false,
         clientId: import.meta.env.VITE_TWITCH_CLIENT_ID,
         twitchIns: null
     }),
@@ -41,13 +43,13 @@ const store = defineStore('twitchJsStore', {
         },
         getBroadcasterInfo(): IBroadcaster | null {
             const twitchStore = useTwitchStore()
-            if (this.token && this.clientId && !this.broadcaster_info) {
+            if (this.token && this.clientId && !this.broadcaster_info && !this.isBroadcastInfoLoaded) {
                 twitchStore.fetchUsers({login: this.username}).then((res) => {
                     const data: IBroadcaster = res.data.data[0]
                     if (data) {
                         this.broadcaster_info = data
                     }
-                })
+                }).finally(() => this.isBroadcastInfoLoaded = true)
             }
 
             return this.broadcaster_info

@@ -23,6 +23,12 @@ const onLogout = () => {
       </div>
     </div>
   </template>
+  <template v-else-if="!twitchJsStore.isBroadcastInfoLoaded">
+    loading...
+  </template>
+  <template v-else>
+    Не удалось загрузится
+  </template>
 </template>
 
 <style scoped>
