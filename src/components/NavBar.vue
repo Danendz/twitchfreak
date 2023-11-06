@@ -2,6 +2,7 @@
 import {getTwitchAuthLink, isUserLoggedInTwitch} from "@/utils";
 import TwitchUserMiniProfile from "@/components/Twitch/TwitchUserMiniProfile.vue";
 import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
+import {useGlobalStore} from "@/store/useGlobalStore.ts";
 
 const navLinks = [
   {
@@ -30,10 +31,33 @@ const authLinks = computed(() => [
     component: TwitchUserMiniProfile
   }
 ])
+
+const navbarState = ref(false)
+const globalState = useGlobalStore()
+
+const isNavbarVisible = computed(() => {
+  if (globalState.isPageWidget) {
+    return navbarState.value
+  }
+
+  return true
+})
+
+const onMouseEnter = () => {
+  navbarState.value = true
+}
+
+const onMouseLeave = () => {
+  navbarState.value = false
+}
 </script>
 
 <template>
-  <nav class="bg-violet-500 text-white">
+  <nav
+      @mouseenter="onMouseEnter"
+      @mouseleave="onMouseLeave"
+      class="bg-violet-500 text-white duration-150 w-full"
+      :class="[!isNavbarVisible && 'opacity-0 absolute']">
     <div class="flex justify-end items-center gap-10 py-3 px-8">
       <ul class="flex gap-5">
         <RouterLink

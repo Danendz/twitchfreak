@@ -39,3 +39,7 @@ const isTwitchTokenExpired = () => {
 export const isUserLoggedInTwitch = (token: string) => {
     return !!token && !isTwitchTokenExpired()
 }
+
+export const isWidgetRoute = (name: string): boolean => {
+    return name.includes('widget')
+}
