@@ -1,7 +1,7 @@
 import TwitchJs from "twitch-js";
 import {defineStore} from "pinia";
 import {IBroadcaster} from "@/entities/Broadcaster/IBroadcaster";
-import {AxiosResponse} from "axios";
+import useTwitchStore from "@/store/useTwitchStore.ts";
 
 interface ITwitchJSStore {
     token: string | null,
@@ -14,18 +14,15 @@ interface ITwitchJSStore {
     twitchIns: null | TwitchJs
 }
 
-const token = 'x3yhazi0jriytun5g2i38dqif7vlel'
-const clientId = 'ffkyh8o8usfrcjkmc3nxg80a6jrpkw'
-
 const store = defineStore('twitchJsStore', {
     state: (): ITwitchJSStore => ({
         token: localStorage.getItem('twitch_token'),
         tokenExpiresAt: localStorage.getItem('twitch_token_expires_at'),
-        username: 'datezz',
+        username: import.meta.env.VITE_TWITCH_USERNAME,
         redirect_uri: 'http://localhost:5174/twitch_auth',
         scope: 'chat:edit chat:read channel:read:subscriptions',
         broadcaster_info: null,
-        clientId: localStorage.getItem('twitch_client_id'),
+        clientId: import.meta.env.VITE_TWITCH_CLIENT_ID,
         twitchIns: null
     }),
     getters: {
@@ -42,19 +39,28 @@ const store = defineStore('twitchJsStore', {
             }
             return state.twitchIns as TwitchJs
         },
-        getBroadcasterInfo: (state): IBroadcaster => {
-            if (state.broadcaster_info) {
-                return state.broadcaster_info
+        getBroadcasterInfo(): IBroadcaster | null {
+            const twitchStore = useTwitchStore()
+            if (this.token && this.clientId && !this.broadcaster_info) {
+                twitchStore.fetchUsers({login: this.username}).then((res) => {
+                    const data: IBroadcaster = res.data.data[0]
+                    if (data) {
+                        this.broadcaster_info = data
+                    }
+                })
             }
-            throw new Error('No broadcaster info')
-        }
+
+            return this.broadcaster_info
+        },
     },
     actions: {
-        setCurrentBroadcasterInfo(res: AxiosResponse) {
-            const data: IBroadcaster = res.data.data[0]
-            if (data) {
-                this.broadcaster_info = data
-            }
+        logout() {
+            localStorage.removeItem('twitch_token')
+            localStorage.removeItem('twitch_token_expires_at')
+            this.broadcaster_info = null
+            this.token = null
+            this.tokenExpiresAt = null
+            console.log('LOGGING OUT FROM TWITCH ACCOUNT')
         }
     }
 })

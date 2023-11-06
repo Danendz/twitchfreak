@@ -1,32 +1,57 @@
 <script setup lang="ts">
-import {useRoute, useRouter} from "vue-router";
 import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
-import {onMounted} from "vue";
-import useTwitchStore from "@/store/useTwitchStore.ts";
 
+const countdown = ref(5)
 const route = useRoute()
 const twitchJsStore = useTwitchJSStore()
-const twitchStore = useTwitchStore()
+// const twitchStore = useTwitchStore()
 const router = useRouter()
+const isSuccess = ref(false)
 
 onMounted(async () => {
   const parsedHash = new URLSearchParams(route.hash.substring(1))
   const token = parsedHash.get('access_token')
+
+  if (!token) {
+    throw new Error('Ошибка при получении токена')
+  }
+
   localStorage.setItem('twitch_token', token)
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + 30)
+  localStorage.setItem('twitch_token_expires_at', expiresAt.toJSON().slice(0, 10))
+
   twitchJsStore.token = token
+  twitchJsStore.tokenExpiresAt = expiresAt.toJSON().slice(0, 10)
 
-  twitchStore.validateToken().then((res) => {
-    console.log(res)
-  })
+  //TODO: Решить как нибудь CORS ошибку на этом запросе
+  // twitchStore.validateToken().then((res) => {
+  //   console.log(res)
+  // })
 
-  console.log(parsedHash.get('access_token'))
-  await router.push({name: 'home'})
+  isSuccess.value = true
+  const timeout = setInterval(() => {
+    if (--countdown.value === 0) {
+      clearInterval(timeout)
+      router.push({name: 'home'})
+    }
+  }, 1000)
 })
 
 </script>
 
 <template>
-
+  <div class="w-full h-52 flex flex-col justify-center items-center">
+    <template v-if="isSuccess">
+      <p>Вы успешно вошли в аккаунт!</p>
+      <p>Перенаправляем на главную страницу через: {{ countdown }} сек. </p>
+      <button @click="router.push({name: 'home'})" class="bg-violet-500 text-white p-1.5 mt-3 rounded">Перейти сейчас
+      </button>
+    </template>
+    <template v-else>
+      <p>*Старательно заходим в ваш аккаунт*</p>
+    </template>
+  </div>
 </template>
 
 <style scoped>

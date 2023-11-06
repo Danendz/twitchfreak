@@ -26,3 +26,16 @@ export const getTwitchAuthLink = () => {
         }
     })
 }
+
+const isTwitchTokenExpired = () => {
+    const expiresAt = localStorage.getItem('twitch_token_expires_at')
+    if (!expiresAt) {
+        return true
+    }
+
+    return new Date() > new Date(expiresAt)
+}
+
+export const isUserLoggedInTwitch = (token: string) => {
+    return !!token && !isTwitchTokenExpired()
+}
