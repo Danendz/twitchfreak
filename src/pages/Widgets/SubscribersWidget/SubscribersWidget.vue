@@ -12,9 +12,11 @@ const broadcasterInfo = computed(() => {
 })
 
 const fetchSubscribers = () => {
-  twitchStore.fetchSubscriptions({broadcaster_id: broadcasterInfo.value.id}).then((res) => {
-    console.log(res)
-  })
+  if (broadcasterInfo.value) {
+    twitchStore.fetchSubscriptions({broadcaster_id: broadcasterInfo.value.id}).then((res) => {
+      console.log(res)
+    })
+  }
 }
 
 watch(() => broadcasterInfo.value, () => {
