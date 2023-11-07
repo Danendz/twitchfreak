@@ -40,6 +40,7 @@ const onWidgetEnter = () => {
 const onWidgetLeft = () => {
   showSettings.value = false
 }
+
 </script>
 
 <template>
