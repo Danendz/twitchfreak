@@ -56,8 +56,8 @@ const onMouseLeave = () => {
   <nav
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
-      class="bg-violet-500 text-white duration-150 w-full"
-      :class="[!isNavbarVisible && 'opacity-0 absolute']">
+      class="bg-violet-500 text-white duration-200 w-full"
+      :class="[!isNavbarVisible && 'opacity-0', globalState.isPageWidget && 'absolute']">
     <div class="flex justify-end items-center gap-10 py-3 px-8">
       <ul class="flex gap-5">
         <RouterLink

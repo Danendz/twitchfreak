@@ -7,7 +7,7 @@ interface ITwitchJSStore {
     token: string | null,
     tokenExpiresAt: string | null,
     username: string,
-    broadcaster_info: null | IBroadcaster
+    _broadcaster_info: null | IBroadcaster
     isBroadcastInfoLoaded: boolean,
     redirect_uri: string,
     scope: string,
@@ -22,7 +22,7 @@ const store = defineStore('twitchJsStore', {
         username: import.meta.env.VITE_TWITCH_USERNAME,
         redirect_uri: 'http://localhost:5174/twitch_auth',
         scope: 'chat:edit chat:read channel:read:subscriptions',
-        broadcaster_info: null,
+        _broadcaster_info: null,
         isBroadcastInfoLoaded: false,
         clientId: import.meta.env.VITE_TWITCH_CLIENT_ID,
         twitchIns: null
@@ -43,23 +43,23 @@ const store = defineStore('twitchJsStore', {
         },
         getBroadcasterInfo(): IBroadcaster | null {
             const twitchStore = useTwitchStore()
-            if (this.token && this.clientId && !this.broadcaster_info && !this.isBroadcastInfoLoaded) {
+            if (this.token && this.clientId && !this._broadcaster_info && !this.isBroadcastInfoLoaded) {
                 twitchStore.fetchUsers({login: this.username}).then((res) => {
                     const data: IBroadcaster = res.data.data[0]
                     if (data) {
-                        this.broadcaster_info = data
+                        this._broadcaster_info = data
                     }
                 }).finally(() => this.isBroadcastInfoLoaded = true)
             }
 
-            return this.broadcaster_info
+            return this._broadcaster_info
         },
     },
     actions: {
         logout() {
             localStorage.removeItem('twitch_token')
             localStorage.removeItem('twitch_token_expires_at')
-            this.broadcaster_info = null
+            this._broadcaster_info = null
             this.token = null
             this.tokenExpiresAt = null
             console.log('LOGGING OUT FROM TWITCH ACCOUNT')

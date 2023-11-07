@@ -12,6 +12,6 @@ export default defineStore('twitchStore', {
         },
         validateToken: () => {
             return id.get('/validate')
-        }
+        },
     }
 })
