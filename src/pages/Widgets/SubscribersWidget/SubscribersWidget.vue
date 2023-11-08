@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import {IconGift, IconSettings} from "@tabler/icons-vue";
+import {IconGift, IconSettings, IconUserStar} from "@tabler/icons-vue";
 import useTwitchStore from "@/store/useTwitchStore.ts";
 import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
 import TextField from "@/components/UI/Inputs/TextField.vue";
+import {ISubscriber} from "@/entities/Subscriber/ISubscriber.ts";
+import FadeTransition from "@/components/UI/Transitions/FadeTransition.vue";
 
 const twitchStore = useTwitchStore()
 const twitchJsStore = useTwitchJSStore()
+const subscribers = ref<ISubscriber[]>([])
+const currentSubscriberIndex = ref<number>(0)
 
 const broadcasterInfo = computed(() => {
   return twitchJsStore.getBroadcasterInfo
@@ -14,7 +18,8 @@ const broadcasterInfo = computed(() => {
 const fetchSubscribers = () => {
   if (broadcasterInfo.value) {
     twitchStore.fetchSubscriptions({broadcaster_id: broadcasterInfo.value.id}).then((res) => {
-      console.log(res)
+      subscribers.value = res.data.data
+      console.log(subscribers.value)
     })
   }
 }
@@ -25,12 +30,29 @@ watch(() => broadcasterInfo.value, () => {
   }
 }, {immediate: true})
 
+let interval = 0
+
 const vars = ref({
   height: '150',
   rounded: '2xl',
   opacity: '0.95',
   iconSize: 90,
-  textSize: '6xl'
+  textSize: '70',
+  intervalSpeed: 5000
+})
+
+watch(() => subscribers.value, () => {
+  if (subscribers.value.length) {
+    currentSubscriberIndex.value = 0
+    clearInterval(interval)
+    interval = setInterval(() => {
+      if (currentSubscriberIndex.value + 1 < subscribers.value.length) {
+        currentSubscriberIndex.value++
+      } else {
+        currentSubscriberIndex.value = 0
+      }
+    }, vars.value.intervalSpeed)
+  }
 })
 
 const showSettings = ref(false)
@@ -54,12 +76,24 @@ const onWidgetLeft = () => {
          @mouseenter="onWidgetEnter"
          @mouseleave="onWidgetLeft"
     >
-      <div>
-        <IconGift :size="vars.iconSize" class="text-violet-400"/>
-      </div>
-      <div class="mx-auto" :class="[`text-${vars.textSize}`]">
-        datezz - 10 подписок
-      </div>
+      <template v-if="subscribers.length">
+        <FadeTransition>
+          <div :key="currentSubscriberIndex">
+            <IconGift
+                v-if="subscribers[currentSubscriberIndex].is_gift"
+                :size="vars.iconSize"
+                class="text-violet-400"/>
+            <IconUserStar v-else :size="vars.iconSize" class="text-violet-400"/>
+          </div>
+        </FadeTransition>
+        <div class="mx-auto" :style="{fontSize: `${vars.textSize}px`}">
+          <FadeTransition>
+            <span :key="currentSubscriberIndex">
+            {{ subscribers[currentSubscriberIndex].user_name }}
+            </span>
+          </FadeTransition>
+        </div>
+      </template>
       <div v-show="showSettings" class="absolute right-2 top-2">
         <button class="hover:bg-violet-500 p-2 rounded duration-150">
           <IconSettings/>
@@ -67,7 +101,7 @@ const onWidgetLeft = () => {
       </div>
     </div>
     <div>
-      <TextField v-model="vars.opacity" label="Прозрачность" />
+      <TextField v-model="vars.opacity" label="Прозрачность"/>
     </div>
   </div>
 </template>
