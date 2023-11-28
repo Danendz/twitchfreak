@@ -1,33 +1,30 @@
 import TwitchJs from "twitch-js";
 import {defineStore} from "pinia";
-import axios from '@/plugins/axios/twitch'
 import {IBroadcaster} from "@/entities/Broadcaster/IBroadcaster";
-import {AxiosResponse} from "axios";
+import useTwitchStore from "@/store/useTwitchStore.ts";
 
 interface ITwitchJSStore {
     token: string | null,
+    tokenExpiresAt: string | null,
     username: string,
-    broadcaster_info: null | IBroadcaster
-    refreshToken: string,
-    code: string,
+    _broadcaster_info: null | IBroadcaster
+    isBroadcastInfoLoaded: boolean,
+    redirect_uri: string,
+    scope: string,
     clientId: string | null,
-    clientSecret: string,
     twitchIns: null | TwitchJs
 }
-
-const link = 'https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=ffkyh8o8usfrcjkmc3nxg80a6jrpkw&redirect_uri=http://localhost&scope=chat:edit chat:read channel:read:subscriptions&state=c3ab8aa609ea11e793ae92361f002671'
-const token = 'x3yhazi0jriytun5g2i38dqif7vlel'
-const clientId = 'ffkyh8o8usfrcjkmc3nxg80a6jrpkw'
 
 const store = defineStore('twitchJsStore', {
     state: (): ITwitchJSStore => ({
         token: localStorage.getItem('twitch_token'),
-        username: 'datezz',
-        broadcaster_info: null,
-        refreshToken: '',
-        code: 'vrttyls73q9faqq5p5mocb3mdbhcgp',
-        clientId: localStorage.getItem('twitch_client_id'),
-        clientSecret: 'sytzo5skz9ntbufl4k8d4at3j3b41h',
+        tokenExpiresAt: localStorage.getItem('twitch_token_expires_at'),
+        username: import.meta.env.VITE_TWITCH_USERNAME,
+        redirect_uri: 'http://localhost:5174/twitch_auth',
+        scope: 'chat:edit chat:read channel:read:subscriptions',
+        _broadcaster_info: null,
+        isBroadcastInfoLoaded: false,
+        clientId: import.meta.env.VITE_TWITCH_CLIENT_ID,
         twitchIns: null
     }),
     getters: {
@@ -44,19 +41,32 @@ const store = defineStore('twitchJsStore', {
             }
             return state.twitchIns as TwitchJs
         },
-        getBroadcasterInfo: (state): IBroadcaster => {
-            if (state.broadcaster_info) {
-                return state.broadcaster_info
+        getBroadcasterInfo(): IBroadcaster | null {
+            if (this.token && this.clientId && !this._broadcaster_info && !this.isBroadcastInfoLoaded) {
+                store().updateBroadcastInfo()
             }
-            throw new Error('No broadcaster info')
-        }
+
+            return this._broadcaster_info
+        },
     },
     actions: {
-        setCurrentBroadcasterInfo(res: AxiosResponse) {
-            const data: IBroadcaster = res.data.data[0]
-            if (data) {
-                this.broadcaster_info = data
-            }
+        logout() {
+            localStorage.removeItem('twitch_token')
+            localStorage.removeItem('twitch_token_expires_at')
+            this._broadcaster_info = null
+            this.token = null
+            this.tokenExpiresAt = null
+            console.log('LOGGING OUT FROM TWITCH ACCOUNT')
+        },
+        updateBroadcastInfo() {
+            const twitchStore = useTwitchStore()
+            this.isBroadcastInfoLoaded = false
+            twitchStore.fetchUsers({login: this.username}).then((res) => {
+                const data: IBroadcaster = res.data.data[0]
+                if (data) {
+                    this._broadcaster_info = data
+                }
+            }).finally(() => this.isBroadcastInfoLoaded = true)
         }
     }
 })
