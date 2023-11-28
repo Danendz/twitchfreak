@@ -20,7 +20,7 @@ const store = defineStore('twitchJsStore', {
         token: localStorage.getItem('twitch_token'),
         tokenExpiresAt: localStorage.getItem('twitch_token_expires_at'),
         username: import.meta.env.VITE_TWITCH_USERNAME,
-        redirect_uri: 'http://localhost:5174/twitch_auth',
+        redirect_uri: import.meta.env.VITE_TWITCH_AUTH_REDIRECT_URL,
         scope: 'chat:edit chat:read channel:read:subscriptions',
         _broadcaster_info: null,
         isBroadcastInfoLoaded: false,
