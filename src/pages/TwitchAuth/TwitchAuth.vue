@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
+// import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
 import {setToken} from "@/utils";
 
 const countdown = ref(5)
 const route = useRoute()
-const twitchJsStore = useTwitchJSStore()
+// const twitchJsStore = useTwitchJSStore()
 // const twitchStore = useTwitchStore()
 const router = useRouter()
 const isSuccess = ref(false)
