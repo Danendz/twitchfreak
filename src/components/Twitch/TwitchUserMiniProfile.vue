@@ -8,6 +8,7 @@ const broadcasterInfo = computed(() => {
   return twitchJsStore.getBroadcasterInfo
 })
 
+
 const onLogout = () => {
   twitchJsStore.logout()
 }

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
+// import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
+import {setToken} from "@/utils";
 
 const countdown = ref(5)
 const route = useRoute()
-const twitchJsStore = useTwitchJSStore()
+// const twitchJsStore = useTwitchJSStore()
 // const twitchStore = useTwitchStore()
 const router = useRouter()
 const isSuccess = ref(false)
@@ -11,18 +12,13 @@ const isSuccess = ref(false)
 onMounted(async () => {
   const parsedHash = new URLSearchParams(route.hash.substring(1))
   const token = parsedHash.get('access_token')
+  // const token = 'e0bemehpypegt4qj2uodbvlwxv8vyo'
 
   if (!token) {
     throw new Error('Ошибка при получении токена')
   }
 
-  localStorage.setItem('twitch_token', token)
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + 30)
-  localStorage.setItem('twitch_token_expires_at', expiresAt.toJSON().slice(0, 10))
-
-  twitchJsStore.token = token
-  twitchJsStore.tokenExpiresAt = expiresAt.toJSON().slice(0, 10)
+  setToken(token)
 
   //TODO: Решить как нибудь CORS ошибку на этом запросе
   // twitchStore.validateToken().then((res) => {
