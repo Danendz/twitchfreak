@@ -43,3 +43,15 @@ export const isUserLoggedInTwitch = (token: string) => {
 export const isWidgetRoute = (name: string): boolean => {
     return name.includes('widget')
 }
+
+export const setToken = (token: string) => {
+    const twitchJsStore = useTwitchJSStore()
+    localStorage.setItem('twitch_token', token)
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 30)
+    localStorage.setItem('twitch_token_expires_at', expiresAt.toJSON().slice(0, 10))
+
+    twitchJsStore.token = token
+    twitchJsStore.tokenExpiresAt = expiresAt.toJSON().slice(0, 10)
+    twitchJsStore.updateBroadcastInfo()
+}

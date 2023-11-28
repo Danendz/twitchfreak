@@ -2,7 +2,6 @@
 import {IconGift, IconSettings, IconUserStar} from "@tabler/icons-vue";
 import useTwitchStore from "@/store/useTwitchStore.ts";
 import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
-import TextField from "@/components/UI/Inputs/TextField.vue";
 import {ISubscriber} from "@/entities/Subscriber/ISubscriber.ts";
 import FadeTransition from "@/components/UI/Transitions/FadeTransition.vue";
 
@@ -100,9 +99,9 @@ const onWidgetLeft = () => {
         </button>
       </div>
     </div>
-    <div>
-      <TextField v-model="vars.opacity" label="Прозрачность"/>
-    </div>
+<!--    <div>-->
+<!--      <TextField v-model="vars.opacity" label="Прозрачность"/>-->
+<!--    </div>-->
   </div>
 </template>
 

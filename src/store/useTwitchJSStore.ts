@@ -42,14 +42,8 @@ const store = defineStore('twitchJsStore', {
             return state.twitchIns as TwitchJs
         },
         getBroadcasterInfo(): IBroadcaster | null {
-            const twitchStore = useTwitchStore()
             if (this.token && this.clientId && !this._broadcaster_info && !this.isBroadcastInfoLoaded) {
-                twitchStore.fetchUsers({login: this.username}).then((res) => {
-                    const data: IBroadcaster = res.data.data[0]
-                    if (data) {
-                        this._broadcaster_info = data
-                    }
-                }).finally(() => this.isBroadcastInfoLoaded = true)
+                store().updateBroadcastInfo()
             }
 
             return this._broadcaster_info
@@ -63,6 +57,16 @@ const store = defineStore('twitchJsStore', {
             this.token = null
             this.tokenExpiresAt = null
             console.log('LOGGING OUT FROM TWITCH ACCOUNT')
+        },
+        updateBroadcastInfo() {
+            const twitchStore = useTwitchStore()
+            this.isBroadcastInfoLoaded = false
+            twitchStore.fetchUsers({login: this.username}).then((res) => {
+                const data: IBroadcaster = res.data.data[0]
+                if (data) {
+                    this._broadcaster_info = data
+                }
+            }).finally(() => this.isBroadcastInfoLoaded = true)
         }
     }
 })
