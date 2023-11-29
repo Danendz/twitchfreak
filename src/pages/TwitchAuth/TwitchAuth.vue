@@ -1,18 +1,14 @@
 <script setup lang="ts">
-// import useTwitchJSStore from "@/store/useTwitchJSStore.ts";
 import {setToken} from "@/utils";
 
 const countdown = ref(5)
 const route = useRoute()
-// const twitchJsStore = useTwitchJSStore()
-// const twitchStore = useTwitchStore()
 const router = useRouter()
 const isSuccess = ref(false)
 
 onMounted(async () => {
   const parsedHash = new URLSearchParams(route.hash.substring(1))
   const token = parsedHash.get('access_token')
-  // const token = 'e0bemehpypegt4qj2uodbvlwxv8vyo'
 
   if (!token) {
     throw new Error('Ошибка при получении токена')
