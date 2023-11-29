@@ -7,8 +7,8 @@ export default defineStore('twitchStore', {
         fetchSubscriptions: (params: { broadcaster_id: string }) => {
             return api.get('/subscriptions', {params})
         },
-        fetchUsers: (params: {login: string}) => {
-            return api.get('/users', {params})
+        fetchUsers: () => {
+            return api.get('/users')
         },
         validateToken: () => {
             return id.get('/validate')

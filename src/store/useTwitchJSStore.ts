@@ -19,7 +19,7 @@ const store = defineStore('twitchJsStore', {
     state: (): ITwitchJSStore => ({
         token: localStorage.getItem('twitch_token'),
         tokenExpiresAt: localStorage.getItem('twitch_token_expires_at'),
-        username: import.meta.env.VITE_TWITCH_USERNAME,
+        username: '',
         redirect_uri: import.meta.env.VITE_TWITCH_AUTH_REDIRECT_URL,
         scope: 'chat:edit chat:read channel:read:subscriptions',
         _broadcaster_info: null,
@@ -61,10 +61,11 @@ const store = defineStore('twitchJsStore', {
         updateBroadcastInfo() {
             const twitchStore = useTwitchStore()
             this.isBroadcastInfoLoaded = false
-            twitchStore.fetchUsers({login: this.username}).then((res) => {
+            twitchStore.fetchUsers().then((res) => {
                 const data: IBroadcaster = res.data.data[0]
                 if (data) {
                     this._broadcaster_info = data
+                    this.username = data.display_name
                 }
             }).finally(() => this.isBroadcastInfoLoaded = true)
         }
